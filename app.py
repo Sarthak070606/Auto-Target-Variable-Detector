@@ -9,6 +9,72 @@ from target_detector import NoTargetResult, TargetSuggestion
 
 st.set_page_config(page_title="Auto Target Detector", layout="wide")
 
+if "theme" not in st.session_state:
+    st.session_state.theme = "dark"
+
+DARK = {
+    "bg":           "#0e1117",
+    "card_bg":      "#1a1a2e",
+    "text":         "#ffffff",
+    "subtext":      "#aaaaaa",
+    "border":       "#2a2a2a",
+    "plot":         "plotly_dark",
+    "footer_bg":    "linear-gradient(90deg, #0f0f0f, #1a1a2e, #0f0f0f)",
+    "footer_border":"#2a2a2a",
+    "footer_sub":   "#888888",
+}
+
+LIGHT = {
+    "bg":           "#f5f7fa",
+    "card_bg":      "#ffffff",
+    "text":         "#111111",
+    "subtext":      "#111111",
+    "border":       "#dddddd",
+    "plot":         "plotly_white",
+    "footer_bg":    "linear-gradient(90deg, #e8eaf6, #ffffff, #e8eaf6)",
+    "footer_border": "#cccccc",
+    "footer_sub":   "#666666",
+}
+
+T = DARK if st.session_state.theme == "dark" else LIGHT
+
+st.markdown(f"""
+    <style>
+        .stApp {{
+            background-color: {T['bg']};
+            color: {T['text']};
+        }}
+        .block-container {{
+            padding-top: 1.5rem;
+        }}
+        .stDataFrame, .stMetric {{
+            background-color: {T['card_bg']};
+            border-radius: 8px;
+        }}
+        div[data-testid="stMetricValue"] {{
+            color: {T['text']};
+        }}
+        label, .stSelectbox label, .stFileUploader label {{
+            color: {T['text']} !important;
+        }}
+    </style>
+""", unsafe_allow_html=True)
+
+top_left, top_right = st.columns([6, 1])
+with top_left:
+    st.title(":rainbow[Auto Target Variable Detector]")
+    st.markdown("Upload your dataset :green[(CSV, TSV, XLSX, JSON, TXT)]")
+with top_right:
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.session_state.theme == "dark":
+        if st.button("☀️ Light Mode"):
+            st.session_state.theme = "light"
+            
+    else:
+        if st.button("🌙 Dark Mode"):
+            st.session_state.theme = "dark"
+            
+
 
 def _render_target_profile(df: pd.DataFrame, col: str) -> None:
     st.markdown(f"#### 📌 Target Column Profile: `{col}`")
@@ -303,9 +369,6 @@ st.markdown(
             color: {T['footer_sub']};
             letter-spacing: 0.5px;
         '>
-            © 2025 Sarthak Jain. All Rights Reserved. &nbsp;|&nbsp;
-            Unauthorized use or reproduction is strictly prohibited.
-        </span>
     </div>
     """,
     unsafe_allow_html=True,
