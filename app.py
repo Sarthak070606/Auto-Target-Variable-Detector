@@ -262,7 +262,7 @@ st.markdown("<hr>", unsafe_allow_html=True)
 
 PLOT = "plotly_dark"
 
-st.markdown("### 📁 Upload a Dataset")
+st.markdown("### 📁 :green[Upload a Dataset]")
 st.markdown(
     "<p style='color:#8892b0;font-size:0.9rem;margin-bottom:1rem'>"
     "Supports CSV, TSV, Excel, JSON, TXT files</p>",
@@ -271,7 +271,7 @@ st.markdown(
 
 uploaded_file = st.file_uploader(
     label="Drop your file here or click to browse",
-    type=["csv", "tsv", "xlsx", "xls", "json", "txt", "sql"],
+    type=["csv", "tsv", "xlsx", "xls", "json", "txt"],
     label_visibility="collapsed",
 )
 
@@ -615,9 +615,9 @@ st.markdown("""
         background:linear-gradient(90deg,#00d4aa,#7c6af7,#ff6b6b,#00d4aa);
         -webkit-background-clip:text; -webkit-text-fill-color:transparent;
         background-clip:text; background-size:200%;
-    '>Made with ❤️ by Sarthak Jain </div>
+    '>Made with ❤️ by Sarthak Jain and Chitransh Bisen </div>
     <p style='color:#8892b0;font-size:0.78rem;margin-top:0.4rem;
         font-family:JetBrains Mono,monospace'>
-         Final Year Project</p>
+         </p>
 </div>
 """, unsafe_allow_html=True)
