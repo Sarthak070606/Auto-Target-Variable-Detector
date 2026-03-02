@@ -164,21 +164,6 @@ button[data-testid="baseButton-header"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<script>
-(function() {
-    function fixArrows() {
-        document.querySelectorAll('[data-testid="stExpander"] summary').forEach(function(s) {
-            s.childNodes.forEach(function(n) {
-                if (n.nodeType === 3) { n.textContent = ''; }
-            });
-        });
-    }
-    setInterval(fixArrows, 200);
-})();
-</script>
-""", unsafe_allow_html=True)
-
 
 def section_tag(text: str):
     st.markdown(
