@@ -160,7 +160,23 @@ section[data-testid="stSidebar"] {
     background: var(--bg2) !important;
     border-right: 1px solid var(--border) !important;
 }
+button[data-testid="baseButton-header"] { display: none !important; }
 </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<script>
+(function() {
+    function fixArrows() {
+        document.querySelectorAll('[data-testid="stExpander"] summary').forEach(function(s) {
+            s.childNodes.forEach(function(n) {
+                if (n.nodeType === 3) { n.textContent = ''; }
+            });
+        });
+    }
+    setInterval(fixArrows, 200);
+})();
+</script>
 """, unsafe_allow_html=True)
 
 
@@ -383,7 +399,7 @@ elif isinstance(suggestion, NoTargetResult):
     """, unsafe_allow_html=True)
 
     section_tag("// what can you do with this?")
-    st.markdown("#### Some ideas for this dataset")
+    st.markdown("#### 💡 Some ideas for this dataset")
     cols = st.columns(min(len(suggestion.suggestions), 3))
     for i, s in enumerate(suggestion.suggestions):
         with cols[i % 3]:
@@ -395,7 +411,7 @@ elif isinstance(suggestion, NoTargetResult):
             )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag("// pick one yourself")
+    section_tag(" pick one yourself")
     st.markdown("####  Try selecting a target manually")
     manual_target = st.selectbox(
         "Pick any column and we'll analyze it:",
@@ -405,7 +421,7 @@ elif isinstance(suggestion, NoTargetResult):
         st.markdown("<br>", unsafe_allow_html=True)
         render_target_profile(df, manual_target, PLOT)
 
-    with st.expander(" How each column scored"):
+    with st.expander("📊 How each column scored"):
         render_table(td.get_all_scores(df))
 
 elif isinstance(suggestion, TargetSuggestion):
@@ -451,7 +467,7 @@ elif isinstance(suggestion, TargetSuggestion):
     </div>
     """, unsafe_allow_html=True)
 
-    with st.expander("Why did we pick this column?", expanded=True):
+    with st.expander(" Why did we pick this column?", expanded=True):
         for reason in suggestion.reasons:
             st.markdown(
                 f"<div style='padding:0.4rem 0;color:#e8eaf6;font-size:0.9rem'>"
@@ -493,7 +509,7 @@ elif isinstance(suggestion, TargetSuggestion):
                 )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag(" try your own col pick")
+    section_tag("// try your own col pick")
     st.markdown("### Choose your own target variable")
     manual_target = st.selectbox(
         "Choose your own column:",
@@ -529,7 +545,7 @@ elif isinstance(suggestion, TargetSuggestion):
 st.markdown("<hr>", unsafe_allow_html=True)
 
 section_tag("Explore the data")
-st.markdown("### 📊 Charts & Graphs")
+st.markdown("###  Charts & Graphs")
 st.markdown("<br>", unsafe_allow_html=True)
 
 if "viz_mode" not in st.session_state:
@@ -537,10 +553,10 @@ if "viz_mode" not in st.session_state:
 
 btn1, btn2 = st.columns(2)
 with btn1:
-    if st.button("📊 Explore by Column", use_container_width=True):
+    if st.button(" Explore by Column", use_container_width=True):
         st.session_state.viz_mode = "column"
 with btn2:
-    if st.button("📈 Explore by Row", use_container_width=True):
+    if st.button(" Explore by Row", use_container_width=True):
         st.session_state.viz_mode = "row"
 
 st.markdown("<br>", unsafe_allow_html=True)
