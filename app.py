@@ -42,6 +42,13 @@ html, body, .stApp {
 
 #MainMenu, footer, header { visibility: hidden; }
 .stDeployButton { display: none; }
+[data-testid="stToolbar"] { display: none; }
+[data-testid="stDecoration"] { display: none; }
+[data-testid="stStatusWidget"] { display: none; }
+button[title="View fullscreen"] { display: none; }
+button[kind="header"] { display: none !important; }
+.styles_viewerBadge__CvC9N { display: none; }
+#stDecoration { display: none; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -333,10 +340,10 @@ c4.metric("Empty Cells",    int(df.isnull().sum().sum()))
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-with st.expander(" first 10 rows "):
+with st.expander(" First 10 rows"):
     render_table(df.head(10))
 
-with st.expander(" Column info "):
+with st.expander(" Column info"):
     render_table(az.basic_analysis(df))
 
 with st.expander(" All column names"):
@@ -360,7 +367,7 @@ if suggestion is None:
     st.markdown("""
     <div style='background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.3);
         border-radius:10px;padding:1rem 1.2rem;color:#ffc107'>
-        ⚠️ Need at least 2 columns to detect a target Try a bigger dataset
+         Need at least 2 columns to detect a target. Try a bigger dataset!
     </div>""", unsafe_allow_html=True)
 
 elif isinstance(suggestion, NoTargetResult):
@@ -376,7 +383,7 @@ elif isinstance(suggestion, NoTargetResult):
     """, unsafe_allow_html=True)
 
     section_tag("// what can you do with this?")
-    st.markdown("#### 💡 Some ideas for this dataset")
+    st.markdown("#### Some ideas for this dataset")
     cols = st.columns(min(len(suggestion.suggestions), 3))
     for i, s in enumerate(suggestion.suggestions):
         with cols[i % 3]:
@@ -389,7 +396,7 @@ elif isinstance(suggestion, NoTargetResult):
 
     st.markdown("<br>", unsafe_allow_html=True)
     section_tag("// pick one yourself")
-    st.markdown("#### ✏️ Try selecting a target manually")
+    st.markdown("####  Try selecting a target manually")
     manual_target = st.selectbox(
         "Pick any column and we'll analyze it:",
         options=["— skip —"] + list(df.columns), index=0,
@@ -398,7 +405,7 @@ elif isinstance(suggestion, NoTargetResult):
         st.markdown("<br>", unsafe_allow_html=True)
         render_target_profile(df, manual_target, PLOT)
 
-    with st.expander("📊 How each column scored"):
+    with st.expander(" How each column scored"):
         render_table(td.get_all_scores(df))
 
 elif isinstance(suggestion, TargetSuggestion):
@@ -444,7 +451,7 @@ elif isinstance(suggestion, TargetSuggestion):
     </div>
     """, unsafe_allow_html=True)
 
-    with st.expander(" Why did we pick this column ", expanded=True):
+    with st.expander("Why did we pick this column?", expanded=True):
         for reason in suggestion.reasons:
             st.markdown(
                 f"<div style='padding:0.4rem 0;color:#e8eaf6;font-size:0.9rem'>"
@@ -469,8 +476,8 @@ elif isinstance(suggestion, TargetSuggestion):
         st.plotly_chart(fig_scores, use_container_width=True)
 
     if suggestion.alternatives:
-        section_tag("other possible targets")
-        st.markdown("####  Other columns that could work ")
+        section_tag(" other possible targets")
+        st.markdown("####  Other columns that could work")
         alt_cols = st.columns(len(suggestion.alternatives))
         for i, (alt_col, alt_score, alt_task) in enumerate(suggestion.alternatives):
             with alt_cols[i]:
@@ -486,8 +493,8 @@ elif isinstance(suggestion, TargetSuggestion):
                 )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag("Try your own col pick ")
-    st.markdown("### Choose your own target Varible ")
+    section_tag(" try your own col pick")
+    st.markdown("### Choose your own target variable")
     manual_target = st.selectbox(
         "Choose your own column:",
         options=["— use suggestion —"] + list(df.columns), index=0,
@@ -505,7 +512,7 @@ elif isinstance(suggestion, TargetSuggestion):
             .sort_values(ascending=False).reset_index()
         )
         corr_df.columns = ["Feature", "Correlation with Target"]
-        with st.expander(" Which columns are related to the target "):
+        with st.expander(" Which columns are related to the target?"):
             fig_corr = px.bar(
                 corr_df, x="Correlation with Target", y="Feature", orientation="h",
                 title=f"Feature correlation with '{final_target}'",
