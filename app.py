@@ -363,15 +363,13 @@ c4.metric("Empty Cells",    int(df.isnull().sum().sum()))
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-acc_open(" First 10 rows")
+st.markdown(":blue[First 10 rows]")
 render_table(df.head(10))
-acc_close()
 
-acc_open(" Column info")
+st.markdown(":orange[Column information]")
 render_table(az.basic_analysis(df))
-acc_close()
 
-acc_open(" All column names")
+st.markdown("### :red[All column names]")
 cols_html = "".join([
     f"<span style='background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);"
     f"border-radius:6px;padding:3px 10px;margin:3px;display:inline-block;"
@@ -379,7 +377,6 @@ cols_html = "".join([
     for c in df.columns
 ])
 st.markdown(f"<div style='padding:0.5rem 0'>{cols_html}</div>", unsafe_allow_html=True)
-acc_close()
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -478,16 +475,15 @@ elif isinstance(suggestion, TargetSuggestion):
     </div>
     """, unsafe_allow_html=True)
 
-    acc_open(" Why did we pick this column?", expanded=True)
+    st.markdown("### Why did we pick this column? ")
     for reason in suggestion.reasons:
         st.markdown(
             f"<div style='padding:0.4rem 0;color:#e8eaf6;font-size:0.9rem'>"
             f"<span style='color:#00d4aa;margin-right:0.5rem'>▸</span>{reason}</div>",
             unsafe_allow_html=True,
         )
-    acc_close()
 
-    acc_open(" Score for every column")
+    st.markdown("### Score for every column")
     scores_df = td.get_all_scores(df)
     render_table(scores_df)
     fig_scores = px.bar(
@@ -502,7 +498,6 @@ elif isinstance(suggestion, TargetSuggestion):
         font_family="Space Grotesk",
     )
     st.plotly_chart(fig_scores, use_container_width=True)
-    acc_close()
 
     if suggestion.alternatives:
         section_tag(" other possible targets")
@@ -541,7 +536,7 @@ elif isinstance(suggestion, TargetSuggestion):
             .sort_values(ascending=False).reset_index()
         )
         corr_df.columns = ["Feature", "Correlation with Target"]
-        acc_open(" Which columns are related to the target?")
+        st.markdown("### :orange[Which columns are related to the target?]")
         fig_corr = px.bar(
             corr_df, x="Correlation with Target", y="Feature", orientation="h",
             title=f"Feature correlation with '{final_target}'",
