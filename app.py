@@ -363,15 +363,15 @@ c4.metric("Empty Cells",    int(df.isnull().sum().sum()))
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-acc_open("👀 First 10 rows")
+acc_open(" First 10 rows")
 render_table(df.head(10))
 acc_close()
 
-acc_open("📋 Column info")
+acc_open(" Column info")
 render_table(az.basic_analysis(df))
 acc_close()
 
-acc_open("🏷️ All column names")
+acc_open(" All column names")
 cols_html = "".join([
     f"<span style='background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);"
     f"border-radius:6px;padding:3px 10px;margin:3px;display:inline-block;"
@@ -409,7 +409,7 @@ elif isinstance(suggestion, NoTargetResult):
     """, unsafe_allow_html=True)
 
     section_tag("// what can you do with this?")
-    st.markdown("#### 💡 Some ideas for this dataset")
+    st.markdown("####  Some ideas for this dataset")
     cols = st.columns(min(len(suggestion.suggestions), 3))
     for i, s in enumerate(suggestion.suggestions):
         with cols[i % 3]:
@@ -422,7 +422,7 @@ elif isinstance(suggestion, NoTargetResult):
 
     st.markdown("<br>", unsafe_allow_html=True)
     section_tag("// pick one yourself")
-    st.markdown("#### ✏️ Try selecting a target manually")
+    st.markdown("####  Try selecting a target manually")
     manual_target = st.selectbox(
         "Pick any column and we'll analyze it:",
         options=["— skip —"] + list(df.columns), index=0,
@@ -431,7 +431,7 @@ elif isinstance(suggestion, NoTargetResult):
         st.markdown("<br>", unsafe_allow_html=True)
         render_target_profile(df, manual_target, PLOT)
 
-    acc_open("📊 How each column scored")
+    acc_open(" How each column scored")
     render_table(td.get_all_scores(df))
     acc_close()
 
@@ -447,7 +447,7 @@ elif isinstance(suggestion, TargetSuggestion):
         "Binary Classification":      "🔵",
         "Multi-class Classification": "🟣",
         "Regression":                 "📈",
-    }.get(suggestion.ml_task, "❓")
+    }.get(suggestion.ml_task)
 
     st.markdown(f"""
     <div style='background:rgba(0,212,170,0.05);border:1px solid rgba(0,212,170,0.3);
@@ -478,7 +478,7 @@ elif isinstance(suggestion, TargetSuggestion):
     </div>
     """, unsafe_allow_html=True)
 
-    acc_open("🤔 Why did we pick this column?", expanded=True)
+    acc_open(" Why did we pick this column?", expanded=True)
     for reason in suggestion.reasons:
         st.markdown(
             f"<div style='padding:0.4rem 0;color:#e8eaf6;font-size:0.9rem'>"
@@ -487,7 +487,7 @@ elif isinstance(suggestion, TargetSuggestion):
         )
     acc_close()
 
-    acc_open("📊 Score for every column")
+    acc_open(" Score for every column")
     scores_df = td.get_all_scores(df)
     render_table(scores_df)
     fig_scores = px.bar(
@@ -505,8 +505,8 @@ elif isinstance(suggestion, TargetSuggestion):
     acc_close()
 
     if suggestion.alternatives:
-        section_tag("// other possible targets")
-        st.markdown("#### 🔁 Other columns that could work")
+        section_tag(" other possible targets")
+        st.markdown("####  Other columns that could work")
         alt_cols = st.columns(len(suggestion.alternatives))
         for i, (alt_col, alt_score, alt_task) in enumerate(suggestion.alternatives):
             with alt_cols[i]:
@@ -522,8 +522,8 @@ elif isinstance(suggestion, TargetSuggestion):
                 )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag("// try your own col pick")
-    st.markdown("### ✏️ Choose your own target variable")
+    section_tag(" try your own col pick")
+    st.markdown("###  Choose your own target variable")
     manual_target = st.selectbox(
         "Choose your own column:",
         options=["— use suggestion —"] + list(df.columns), index=0,
@@ -541,7 +541,7 @@ elif isinstance(suggestion, TargetSuggestion):
             .sort_values(ascending=False).reset_index()
         )
         corr_df.columns = ["Feature", "Correlation with Target"]
-        acc_open("📐 Which columns are related to the target?")
+        acc_open(" Which columns are related to the target?")
         fig_corr = px.bar(
             corr_df, x="Correlation with Target", y="Feature", orientation="h",
             title=f"Feature correlation with '{final_target}'",
@@ -576,7 +576,7 @@ with btn2:
 st.markdown("<br>", unsafe_allow_html=True)
 
 if st.session_state.viz_mode == "column":
-    section_tag("// column explorer")
+    section_tag(" column explorer")
     st.markdown("#### 📊 Column-level Charts")
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -654,7 +654,7 @@ if st.session_state.viz_mode == "row":
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("""
 <div style='text-align:center;padding:1.5rem 0 2rem 0'>
-    <div style='font-size:1.8rem;margin-bottom:0.6rem'>🎯</div>
+    <div style='font-size:1.8rem;margin-bottom:0.6rem'></div>
     <div style='
         font-size:1rem;font-weight:600;letter-spacing:0.05em;
         background:linear-gradient(90deg,#00d4aa,#7c6af7,#ff6b6b,#00d4aa);
