@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import uuid
 
 from data_loader import load_data
 import analyzer as az
@@ -47,6 +48,7 @@ html, body, .stApp {
 [data-testid="stStatusWidget"] { display: none; }
 button[title="View fullscreen"] { display: none; }
 button[kind="header"] { display: none !important; }
+button[data-testid="baseButton-header"] { display: none !important; }
 .styles_viewerBadge__CvC9N { display: none; }
 #stDecoration { display: none; }
 
@@ -122,26 +124,42 @@ div[data-testid="stSelectbox"] label {
     font-size: 0.85rem !important;
 }
 
-div[data-testid="stExpander"] {
-    background: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 12px !important;
-    margin-bottom: 0.75rem !important;
-    overflow: hidden !important;
+/* custom accordion styles */
+.acc-wrap {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0,212,170,0.18);
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
 }
-div[data-testid="stExpander"] summary {
-    font-weight: 600 !important;
-    color: var(--text) !important;
+.acc-wrap[open] { border-color: rgba(0,212,170,0.35); }
+.acc-wrap summary {
+    padding: 1rem 1.2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e8eaf6;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    font-family: 'Space Grotesk', sans-serif;
 }
-div[data-testid="stExpander"] summary:hover {
-    color: var(--teal) !important;
+.acc-wrap summary::-webkit-details-marker { display: none; }
+.acc-wrap summary::marker { display: none; }
+.acc-wrap summary:hover { color: #00d4aa; }
+.acc-wrap summary::after {
+    content: '＋';
+    color: #00d4aa;
+    font-size: 1.1rem;
+    font-weight: 400;
+    flex-shrink: 0;
+    margin-left: 1rem;
+    transition: transform 0.2s;
 }
-div[data-testid="stExpander"] summary svg {
-    color: var(--teal) !important;
-}
-div[data-testid="stExpander"] details[open] {
-    border-color: rgba(0,212,170,0.35) !important;
-}
+.acc-wrap[open] summary::after { content: '－'; }
+.acc-body { padding: 0 1.2rem 1.2rem 1.2rem; }
 
 div[data-testid="stAlert"] {
     border-radius: 10px !important;
@@ -160,18 +178,34 @@ section[data-testid="stSidebar"] {
     background: var(--bg2) !important;
     border-right: 1px solid var(--border) !important;
 }
-button[data-testid="baseButton-header"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
 
 def section_tag(text: str):
     st.markdown(
-        f"<p style='font-family:JetBrains Mono,monospace; font-size:0.72rem;"
-        f"color:#00d4aa; letter-spacing:0.18em; text-transform:uppercase;"
+        f"<p style='font-family:JetBrains Mono,monospace;font-size:0.72rem;"
+        f"color:#00d4aa;letter-spacing:0.18em;text-transform:uppercase;"
         f"margin-bottom:0.2rem'>{text}</p>",
         unsafe_allow_html=True,
     )
+
+
+def acc_open(label: str, expanded: bool = False) -> str:
+    """Renders the opening tag of a custom accordion. Returns a unique id."""
+    uid = uuid.uuid4().hex[:8]
+    open_attr = "open" if expanded else ""
+    st.markdown(
+        f"<details class='acc-wrap' id='acc-{uid}' {open_attr}>"
+        f"<summary>{label}</summary>"
+        f"<div class='acc-body'>",
+        unsafe_allow_html=True,
+    )
+    return uid
+
+
+def acc_close():
+    st.markdown("</div></details>", unsafe_allow_html=True)
 
 
 def render_table(dataframe: pd.DataFrame) -> None:
@@ -199,17 +233,6 @@ def render_table(dataframe: pd.DataFrame) -> None:
         f"<thead><tr>{headers}</tr></thead>"
         f"<tbody>{rows_html}</tbody>"
         f"</table></div>",
-        unsafe_allow_html=True,
-    )
-
-
-def card(content_html: str, glow: bool = False):
-    border = "rgba(0,212,170,0.5)" if glow else "rgba(0,212,170,0.18)"
-    st.markdown(
-        f"""<div style='background:rgba(255,255,255,0.04);border:1px solid {border};
-        border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:0.75rem;
-        box-shadow:{"0 0 24px rgba(0,212,170,0.08)" if glow else "none"}'>
-        {content_html}</div>""",
         unsafe_allow_html=True,
     )
 
@@ -260,17 +283,17 @@ def render_target_profile(df: pd.DataFrame, col: str, plot_template: str) -> Non
 PLOT = "plotly_dark"
 
 st.markdown("""
-<div style='text-align:center; padding: 2.5rem 0 1.5rem 0'>
-    <h1 style='font-size:clamp(2.2rem,5vw,3.8rem); font-weight:700;
-        line-height:1.1; margin:0 0 0.8rem 0'>
+<div style='text-align:center;padding:2.5rem 0 1.5rem 0'>
+    <h1 style='font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;
+        line-height:1.1;margin:0 0 0.8rem 0'>
         <span style='color:#ff4b4b'>Auto</span>
         <span style='color:#e8eaf6'> Target </span>
         <span style='background:linear-gradient(135deg,#00d4aa,#4a90d9);
             -webkit-background-clip:text;-webkit-text-fill-color:transparent;
             background-clip:text'>Detector</span>
     </h1>
-    <p style='color:#8892b0; font-size:1.05rem; max-width:560px;
-        margin:0 auto 1.5rem auto; line-height:1.7'>
+    <p style='color:#8892b0;font-size:1.05rem;max-width:560px;
+        margin:0 auto 1.5rem auto;line-height:1.7'>
         Upload your dataset and this app will try to guess
         which column you should predict
     </p>
@@ -300,8 +323,7 @@ if uploaded_file is None:
         <p style='color:#8892b0;margin:0;font-size:0.95rem'>
             Upload any dataset file to get started</p>
         <p style='color:rgba(0,212,170,0.6);margin:0.4rem 0 0 0;font-size:0.8rem;
-            font-family:JetBrains Mono,monospace'>
-            CSV · TSV · XLSX · JSON · TXT</p>
+            font-family:JetBrains Mono,monospace'>CSV · TSV · XLSX · JSON · TXT</p>
     </div>
     """, unsafe_allow_html=True)
     st.stop()
@@ -341,20 +363,23 @@ c4.metric("Empty Cells",    int(df.isnull().sum().sum()))
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-with st.expander(" First 10 rows"):
-    render_table(df.head(10))
+acc_open("👀 First 10 rows")
+render_table(df.head(10))
+acc_close()
 
-with st.expander(" Column info"):
-    render_table(az.basic_analysis(df))
+acc_open("📋 Column info")
+render_table(az.basic_analysis(df))
+acc_close()
 
-with st.expander(" All column names"):
-    cols_html = "".join([
-        f"<span style='background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);"
-        f"border-radius:6px;padding:3px 10px;margin:3px;display:inline-block;"
-        f"font-family:JetBrains Mono,monospace;font-size:0.78rem;color:#00d4aa'>{c}</span>"
-        for c in df.columns
-    ])
-    st.markdown(f"<div style='padding:0.5rem 0'>{cols_html}</div>", unsafe_allow_html=True)
+acc_open("🏷️ All column names")
+cols_html = "".join([
+    f"<span style='background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);"
+    f"border-radius:6px;padding:3px 10px;margin:3px;display:inline-block;"
+    f"font-family:JetBrains Mono,monospace;font-size:0.78rem;color:#00d4aa'>{c}</span>"
+    for c in df.columns
+])
+st.markdown(f"<div style='padding:0.5rem 0'>{cols_html}</div>", unsafe_allow_html=True)
+acc_close()
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -368,7 +393,7 @@ if suggestion is None:
     st.markdown("""
     <div style='background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.3);
         border-radius:10px;padding:1rem 1.2rem;color:#ffc107'>
-         Need at least 2 columns to detect a target. Try a bigger dataset!
+        ⚠️ Need at least 2 columns to detect a target. Try a bigger dataset!
     </div>""", unsafe_allow_html=True)
 
 elif isinstance(suggestion, NoTargetResult):
@@ -396,8 +421,8 @@ elif isinstance(suggestion, NoTargetResult):
             )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag(" pick one yourself")
-    st.markdown("####  Try selecting a target manually")
+    section_tag("// pick one yourself")
+    st.markdown("#### ✏️ Try selecting a target manually")
     manual_target = st.selectbox(
         "Pick any column and we'll analyze it:",
         options=["— skip —"] + list(df.columns), index=0,
@@ -406,8 +431,9 @@ elif isinstance(suggestion, NoTargetResult):
         st.markdown("<br>", unsafe_allow_html=True)
         render_target_profile(df, manual_target, PLOT)
 
-    with st.expander("📊 How each column scored"):
-        render_table(td.get_all_scores(df))
+    acc_open("📊 How each column scored")
+    render_table(td.get_all_scores(df))
+    acc_close()
 
 elif isinstance(suggestion, TargetSuggestion):
     conf_colors = {"High": "#00d4aa", "Medium": "#f7b731", "Low": "#ff4b4b"}
@@ -452,33 +478,35 @@ elif isinstance(suggestion, TargetSuggestion):
     </div>
     """, unsafe_allow_html=True)
 
-    with st.expander(" Why did we pick this column?", expanded=True):
-        for reason in suggestion.reasons:
-            st.markdown(
-                f"<div style='padding:0.4rem 0;color:#e8eaf6;font-size:0.9rem'>"
-                f"<span style='color:#00d4aa;margin-right:0.5rem'>▸</span>{reason}</div>",
-                unsafe_allow_html=True,
-            )
+    acc_open("🤔 Why did we pick this column?", expanded=True)
+    for reason in suggestion.reasons:
+        st.markdown(
+            f"<div style='padding:0.4rem 0;color:#e8eaf6;font-size:0.9rem'>"
+            f"<span style='color:#00d4aa;margin-right:0.5rem'>▸</span>{reason}</div>",
+            unsafe_allow_html=True,
+        )
+    acc_close()
 
-    with st.expander(" Score for every column"):
-        scores_df = td.get_all_scores(df)
-        render_table(scores_df)
-        fig_scores = px.bar(
-            scores_df, x="Score", y="Column", orientation="h",
-            color="Score", color_continuous_scale="Teal",
-            title="How likely is each column to be the target?",
-            template=PLOT, text="Score",
-        )
-        fig_scores.update_layout(
-            yaxis=dict(autorange="reversed"), height=420,
-            plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-            font_family="Space Grotesk",
-        )
-        st.plotly_chart(fig_scores, use_container_width=True)
+    acc_open("📊 Score for every column")
+    scores_df = td.get_all_scores(df)
+    render_table(scores_df)
+    fig_scores = px.bar(
+        scores_df, x="Score", y="Column", orientation="h",
+        color="Score", color_continuous_scale="Teal",
+        title="How likely is each column to be the target?",
+        template=PLOT, text="Score",
+    )
+    fig_scores.update_layout(
+        yaxis=dict(autorange="reversed"), height=420,
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        font_family="Space Grotesk",
+    )
+    st.plotly_chart(fig_scores, use_container_width=True)
+    acc_close()
 
     if suggestion.alternatives:
-        section_tag(" other possible targets")
-        st.markdown("####  Other columns that could work")
+        section_tag("// other possible targets")
+        st.markdown("#### 🔁 Other columns that could work")
         alt_cols = st.columns(len(suggestion.alternatives))
         for i, (alt_col, alt_score, alt_task) in enumerate(suggestion.alternatives):
             with alt_cols[i]:
@@ -494,8 +522,8 @@ elif isinstance(suggestion, TargetSuggestion):
                 )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag("try your own col pick")
-    st.markdown("### Choose your own target variable")
+    section_tag("// try your own col pick")
+    st.markdown("### ✏️ Choose your own target variable")
     manual_target = st.selectbox(
         "Choose your own column:",
         options=["— use suggestion —"] + list(df.columns), index=0,
@@ -513,24 +541,25 @@ elif isinstance(suggestion, TargetSuggestion):
             .sort_values(ascending=False).reset_index()
         )
         corr_df.columns = ["Feature", "Correlation with Target"]
-        with st.expander(" Which columns are related to the target?"):
-            fig_corr = px.bar(
-                corr_df, x="Correlation with Target", y="Feature", orientation="h",
-                title=f"Feature correlation with '{final_target}'",
-                template=PLOT, color="Correlation with Target",
-                color_continuous_scale="Blues",
-            )
-            fig_corr.update_layout(
-                yaxis=dict(autorange="reversed"), height=420,
-                plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-                font_family="Space Grotesk",
-            )
-            st.plotly_chart(fig_corr, use_container_width=True)
+        acc_open("📐 Which columns are related to the target?")
+        fig_corr = px.bar(
+            corr_df, x="Correlation with Target", y="Feature", orientation="h",
+            title=f"Feature correlation with '{final_target}'",
+            template=PLOT, color="Correlation with Target",
+            color_continuous_scale="Blues",
+        )
+        fig_corr.update_layout(
+            yaxis=dict(autorange="reversed"), height=420,
+            plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+            font_family="Space Grotesk",
+        )
+        st.plotly_chart(fig_corr, use_container_width=True)
+        acc_close()
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
 section_tag("Explore the data")
-st.markdown("###  Charts & Graphs")
+st.markdown("### 📊 Charts & Graphs")
 st.markdown("<br>", unsafe_allow_html=True)
 
 if "viz_mode" not in st.session_state:
@@ -538,10 +567,10 @@ if "viz_mode" not in st.session_state:
 
 btn1, btn2 = st.columns(2)
 with btn1:
-    if st.button(" Explore by Column", use_container_width=True):
+    if st.button("📊 Explore by Column", use_container_width=True):
         st.session_state.viz_mode = "column"
 with btn2:
-    if st.button(" Explore by Row", use_container_width=True):
+    if st.button("📈 Explore by Row", use_container_width=True):
         st.session_state.viz_mode = "row"
 
 st.markdown("<br>", unsafe_allow_html=True)
@@ -625,12 +654,12 @@ if st.session_state.viz_mode == "row":
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("""
 <div style='text-align:center;padding:1.5rem 0 2rem 0'>
-    <div style='font-size:1.8rem;margin-bottom:0.6rem'></div>
+    <div style='font-size:1.8rem;margin-bottom:0.6rem'>🎯</div>
     <div style='
-        font-size:1rem; font-weight:600; letter-spacing:0.05em;
+        font-size:1rem;font-weight:600;letter-spacing:0.05em;
         background:linear-gradient(90deg,#00d4aa,#7c6af7,#ff6b6b,#00d4aa);
-        -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-        background-clip:text; background-size:200%;
-    '>Made with ❤️ by Sarthak Jain</div>
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        background-clip:text;background-size:200%'>
+        Made with ❤️ by Sarthak Jain</div>
 </div>
 """, unsafe_allow_html=True)
