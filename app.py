@@ -494,7 +494,7 @@ elif isinstance(suggestion, TargetSuggestion):
                 )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    section_tag("// try your own col pick")
+    section_tag("try your own col pick")
     st.markdown("### Choose your own target variable")
     manual_target = st.selectbox(
         "Choose your own column:",
