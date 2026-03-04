@@ -356,6 +356,7 @@ git push origin feature/my-awesome-feature
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer"/>
 
-**Built with ❤️ by [Sarthak Jain](https://github.com/YOUR_USERNAME)**
-
+**Built with ❤️ by [Sarthak Jain]([https://github.com/YOUR_USERNAME](https://github.com/Sarthak070606/Auto-Target-Variable-Detector.git
+))**
+<h1 style = "color : red"> [URL] [https://auto-target-variable-detector-bqeybfjapfk9kau2po6q2j.streamlit.app/] </h1>
 </div>
